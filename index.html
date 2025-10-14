@@ -19,7 +19,7 @@
         <div class="sticker pepper">🫑</div>
     </div>
 
-    <div class="container">
+    <div class="app-container">
         <!-- Header with Fun Design -->
         <header class="main-header">
             <div class="header-content">
@@ -29,82 +29,79 @@
                 </div>
                 <p class="tagline">Find delicious recipes that love you back! 🍴✨</p>
             </div>
-            <div class="header-decoration">
-                <div class="decoration-food">🍕</div>
-                <div class="decoration-food">🍣</div>
-                <div class="decoration-food">🥗</div>
-            </div>
         </header>
 
         <main class="main-content">
-            <!-- Filters Section with Fun Design -->
-            <section class="filters-section card rainbow-card">
-                <div class="section-header">
-                    <h2>🎯 Create Your Food Profile</h2>
-                    <p>Tell us what works for your body!</p>
-                </div>
-                
-                <div class="filters-grid">
-                    <!-- Allergens Card -->
-                    <div class="filter-card allergen-card">
-                        <div class="filter-header">
-                            <span class="filter-icon">⚠️</span>
-                            <h3>Allergies & Sensitivities</h3>
+            <!-- Left Column - Filters -->
+            <section class="filters-column">
+                <div class="filters-section card rainbow-card">
+                    <div class="section-header">
+                        <h2>🎯 Create Your Food Profile</h2>
+                        <p>Tell us what works for your body!</p>
+                    </div>
+                    
+                    <div class="filters-container">
+                        <!-- Allergens Card -->
+                        <div class="filter-card allergen-card">
+                            <div class="filter-header">
+                                <span class="filter-icon">⚠️</span>
+                                <h3>Allergies & Sensitivities</h3>
+                            </div>
+                            <div class="checkbox-grid" id="allergen-filters">
+                                <!-- Populated by JavaScript -->
+                            </div>
                         </div>
-                        <div class="checkbox-grid" id="allergen-filters">
-                            <!-- Populated by JavaScript -->
+
+                        <!-- Diet Card -->
+                        <div class="filter-card diet-card">
+                            <div class="filter-header">
+                                <span class="filter-icon">🥗</span>
+                                <h3>Dietary Lifestyle</h3>
+                            </div>
+                            <div class="checkbox-grid" id="diet-filters">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Cuisine Card -->
+                        <div class="filter-card cuisine-card">
+                            <div class="filter-header">
+                                <span class="filter-icon">🌍</span>
+                                <h3>Cuisine Preferences</h3>
+                            </div>
+                            <div class="checkbox-grid" id="cuisine-filters">
+                                <!-- Populated by JavaScript -->
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Diet Card -->
-                    <div class="filter-card diet-card">
-                        <div class="filter-header">
-                            <span class="filter-icon">🥗</span>
-                            <h3>Dietary Lifestyle</h3>
-                        </div>
-                        <div class="checkbox-grid" id="diet-filters">
-                            <!-- Populated by JavaScript -->
-                        </div>
+                    <div class="action-buttons">
+                        <button id="find-recipes" class="primary-btn magic-btn">
+                            <span class="btn-icon">🔍</span>
+                            Find My Perfect Recipes!
+                        </button>
+                        <button id="reset-filters" class="secondary-btn">
+                            <span class="btn-icon">🔄</span>
+                            Start Over
+                        </button>
                     </div>
-
-                    <!-- Cuisine Card -->
-                    <div class="filter-card cuisine-card">
-                        <div class="filter-header">
-                            <span class="filter-icon">🌍</span>
-                            <h3>Cuisine Preferences</h3>
-                        </div>
-                        <div class="checkbox-grid" id="cuisine-filters">
-                            <!-- Populated by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-
-                <div class="action-buttons">
-                    <button id="find-recipes" class="primary-btn magic-btn">
-                        <span class="btn-icon">🔍</span>
-                        Find My Perfect Recipes!
-                    </button>
-                    <button id="reset-filters" class="secondary-btn">
-                        <span class="btn-icon">🔄</span>
-                        Start Over
-                    </button>
                 </div>
             </section>
 
-            <!-- Results & Analytics Section -->
-            <section class="results-section">
+            <!-- Right Column - Results & Analytics -->
+            <section class="results-column">
                 <!-- EDA Charts Section -->
                 <div class="analytics-section card">
                     <div class="section-header">
                         <h2>📊 Recipe Analytics</h2>
                         <p>Discover insights about your food choices!</p>
                     </div>
-                    <div class="charts-container">
+                    <div class="charts-grid">
                         <div class="chart-wrapper">
                             <div class="chart-card">
                                 <h3>🍽️ Cuisine Distribution</h3>
                                 <div class="chart-container">
-                                    <canvas id="cuisineChart" width="400" height="300"></canvas>
+                                    <canvas id="cuisineChart"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -112,7 +109,7 @@
                             <div class="chart-card">
                                 <h3>⚠️ Common Allergens</h3>
                                 <div class="chart-container">
-                                    <canvas id="allergenChart" width="400" height="300"></canvas>
+                                    <canvas id="allergenChart"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -120,7 +117,7 @@
                             <div class="chart-card">
                                 <h3>🥗 Diet Types</h3>
                                 <div class="chart-container">
-                                    <canvas id="dietChart" width="400" height="300"></canvas>
+                                    <canvas id="dietChart"></canvas>
                                 </div>
                             </div>
                         </div>
