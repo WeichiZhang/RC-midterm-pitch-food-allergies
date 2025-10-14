@@ -130,7 +130,7 @@ body {
     font-weight: 300;
 }
 
-/* Main Content Grid Layout */
+/* Main Content Grid Layout - FIXED */
 .main-content {
     display: grid;
     grid-template-columns: 400px 1fr;
@@ -139,26 +139,26 @@ body {
     align-items: start;
 }
 
-@media (max-width: 1200px) {
-    .main-content {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    
-    .filters-column {
-        order: 2;
-    }
-    
-    .results-column {
-        order: 1;
-    }
+/* Ensure the columns take full width */
+.filters-column {
+    width: 100%;
 }
 
-/* Filters Column */
-.filters-column {
+.results-column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Filters Section */
+.filters-section {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
     position: sticky;
     top: 2rem;
-    height: fit-content;
 }
 
 .filters-container {
@@ -168,87 +168,34 @@ body {
     margin-bottom: 2rem;
 }
 
-/* Results Column */
-.results-column {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-/* Card Styles */
-.card {
-    background: var(--white);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    padding: 2rem;
-    transition: var(--transition);
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-hover);
-}
-
-.rainbow-card {
-    background: linear-gradient(135deg, var(--white) 0%, #f8f9fa 100%);
-    border: 3px solid transparent;
-    background-clip: padding-box;
-    position: relative;
-}
-
-.rainbow-card::before {
-    content: '';
-    position: absolute;
-    top: -3px;
-    left: -3px;
-    right: -3px;
-    bottom: -3px;
-    background: var(--gradient-1);
-    border-radius: var(--border-radius);
-    z-index: -1;
-    animation: rainbow 3s ease-in-out infinite;
-}
-
-@keyframes rainbow {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
-}
-
-/* Section Headers */
-.section-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.section-header h2 {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-    font-family: 'Comic Neue', cursive;
-}
-
-.section-header p {
-    color: var(--text-light);
-    font-size: 1.1rem;
-}
-
 /* Filter Cards */
 .filter-card {
-    background: var(--white);
+    background: var(--bg-light);
     border-radius: 15px;
     padding: 1.5rem;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    transition: var(--transition);
     border: 2px solid transparent;
+    transition: var(--transition);
 }
 
 .filter-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow);
 }
 
-.allergen-card { border-color: var(--danger); }
-.diet-card { border-color: var(--success); }
-.cuisine-card { border-color: var(--purple); }
+.allergen-card { 
+    border-color: var(--danger);
+    background: linear-gradient(135deg, #fff5f5 0%, var(--bg-light) 100%);
+}
+
+.diet-card { 
+    border-color: var(--success);
+    background: linear-gradient(135deg, #f0fff4 0%, var(--bg-light) 100%);
+}
+
+.cuisine-card { 
+    border-color: var(--purple);
+    background: linear-gradient(135deg, #faf5ff 0%, var(--bg-light) 100%);
+}
 
 .filter-header {
     display: flex;
@@ -266,6 +213,7 @@ body {
 .filter-header h3 {
     font-size: 1.2rem;
     color: var(--text-dark);
+    font-weight: 600;
 }
 
 /* Checkbox Grid */
@@ -285,7 +233,7 @@ body {
 }
 
 .checkbox-item:hover {
-    background: #F7FAFC;
+    background: rgba(255, 255, 255, 0.7);
     transform: translateX(5px);
 }
 
@@ -299,6 +247,7 @@ body {
     cursor: pointer;
     font-weight: 500;
     color: var(--text-dark);
+    flex: 1;
 }
 
 /* Button Styles */
@@ -331,28 +280,8 @@ button {
 }
 
 .primary-btn:hover {
-    transform: translateY(-3px) scale(1.05);
+    transform: translateY(-3px) scale(1.02);
     box-shadow: 0 10px 25px rgba(255, 107, 107, 0.6);
-}
-
-.magic-btn {
-    position: relative;
-    overflow: hidden;
-}
-
-.magic-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    transition: 0.5s;
-}
-
-.magic-btn:hover::before {
-    left: 100%;
 }
 
 .secondary-btn {
@@ -364,6 +293,7 @@ button {
 .secondary-btn:hover {
     background: #F7FAFC;
     transform: translateY(-2px);
+    border-color: var(--primary);
 }
 
 .btn-icon {
@@ -373,15 +303,27 @@ button {
 /* Analytics Section */
 .analytics-section {
     background: var(--gradient-3);
+    border-radius: var(--border-radius);
+    padding: 2rem;
     color: var(--white);
+    box-shadow: var(--shadow);
+}
+
+.analytics-section .section-header {
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
 .analytics-section .section-header h2 {
     color: var(--white);
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    font-family: 'Comic Neue', cursive;
 }
 
 .analytics-section .section-header p {
     color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
 }
 
 .charts-grid {
@@ -425,11 +367,21 @@ button {
 /* Recipes Results */
 .recipes-results {
     background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
 }
 
 .results-header {
     text-align: center;
     margin-bottom: 2rem;
+}
+
+.results-header h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    font-family: 'Comic Neue', cursive;
+    color: var(--text-dark);
 }
 
 .results-count {
@@ -612,6 +564,17 @@ button {
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .filters-section {
+        position: static;
+    }
+}
+
 @media (max-width: 768px) {
     .app-container {
         padding: 10px;
@@ -619,15 +582,6 @@ button {
     
     .logo h1 {
         font-size: 2.5rem;
-    }
-    
-    .main-content {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .filters-column {
-        position: static;
     }
     
     .charts-grid {
@@ -641,6 +595,10 @@ button {
     .checkbox-grid {
         grid-template-columns: 1fr 1fr;
     }
+    
+    .card {
+        padding: 1.5rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -652,7 +610,7 @@ button {
         font-size: 2rem;
     }
     
-    .card {
+    .main-header {
         padding: 1.5rem;
     }
 }
