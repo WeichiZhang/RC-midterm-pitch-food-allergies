@@ -4,46 +4,54 @@ let selectedDiets = [];
 let selectedCuisines = [];
 let charts = {};
 
-// DOM Elements
-let allergenFiltersContainer, dietFiltersContainer, cuisineFiltersContainer;
-let findRecipesButton, resetFiltersButton, recipesContainer, resultsCount;
-
 // Chart instances
 let cuisineChart, allergenChart, dietChart;
 
 // Initialization
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM loaded, initializing app...");
     initializeApp();
 });
 
 function initializeApp() {
     // Get DOM elements
-    allergenFiltersContainer = document.getElementById('allergen-filters');
-    dietFiltersContainer = document.getElementById('diet-filters');
-    cuisineFiltersContainer = document.getElementById('cuisine-filters');
-    findRecipesButton = document.getElementById('find-recipes');
-    resetFiltersButton = document.getElementById('reset-filters');
-    recipesContainer = document.getElementById('recipes-container');
-    resultsCount = document.getElementById('results-count');
+    const allergenFiltersContainer = document.getElementById('allergen-filters');
+    const dietFiltersContainer = document.getElementById('diet-filters');
+    const cuisineFiltersContainer = document.getElementById('cuisine-filters');
+    const findRecipesButton = document.getElementById('find-recipes');
+    const resetFiltersButton = document.getElementById('reset-filters');
+    const recipesContainer = document.getElementById('recipes-container');
+    const resultsCount = document.getElementById('results-count');
     
     // Set up event listeners
     findRecipesButton.addEventListener('click', handleFindRecipes);
     resetFiltersButton.addEventListener('click', handleResetFilters);
     
-    // Initialize UI
-    setTimeout(() => {
-        populateFilterOptions();
-        initializeCharts(); // Initialize charts with full dataset
+    // Initialize UI - wait for data to load
+    const initInterval = setInterval(() => {
+        if (recipeData && recipeData.length > 0) {
+            clearInterval(initInterval);
+            console.log("Data loaded, populating filters and charts...");
+            populateFilterOptions();
+            initializeCharts();
+        }
     }, 100);
 }
 
 function populateFilterOptions() {
-    populateFilterSection(allergenFiltersContainer, getAllergensList(), 'allergen');
-    populateFilterSection(dietFiltersContainer, getDietTypesList(), 'diet');
-    populateFilterSection(cuisineFiltersContainer, getCuisineTypesList(), 'cuisine');
+    console.log("Populating filter options...");
+    populateFilterSection('allergen-filters', getAllergensList(), 'allergen');
+    populateFilterSection('diet-filters', getDietTypesList(), 'diet');
+    populateFilterSection('cuisine-filters', getCuisineTypesList(), 'cuisine');
 }
 
-function populateFilterSection(container, items, type) {
+function populateFilterSection(containerId, items, type) {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error("Container not found:", containerId);
+        return;
+    }
+    
     container.innerHTML = '';
     items.forEach(item => {
         const checkboxItem = document.createElement('div');
@@ -81,15 +89,19 @@ function handleFilterSelection(event, type) {
         const index = array.indexOf(value);
         if (index > -1) array.splice(index, 1);
     }
+    
+    console.log(`Selected ${type}:`, array);
 }
 
 function handleFindRecipes() {
+    console.log("Finding recipes...");
     const filteredRecipes = filterRecipes(selectedAllergens, selectedDiets, selectedCuisines);
     displayRecipes(filteredRecipes);
     updateCharts(filteredRecipes);
 }
 
 function handleResetFilters() {
+    console.log("Resetting filters...");
     selectedAllergens = [];
     selectedDiets = [];
     selectedCuisines = [];
@@ -98,6 +110,9 @@ function handleResetFilters() {
         checkbox.checked = false;
     });
     
+    const recipesContainer = document.getElementById('recipes-container');
+    const resultsCount = document.getElementById('results-count');
+    
     recipesContainer.innerHTML = '';
     resultsCount.textContent = 'Select your preferences and let the magic begin! ✨';
     initializeCharts(); // Reset charts to show full dataset
@@ -105,12 +120,16 @@ function handleResetFilters() {
 
 // Chart Functions
 function initializeCharts() {
+    console.log("Initializing charts with full dataset...");
     createCuisineChart();
     createAllergenChart();
     createDietChart();
 }
 
 function updateCharts(filteredRecipes) {
+    console.log("Updating charts with filtered data:", filteredRecipes.length, "recipes");
+    
+    // Destroy existing charts if they exist
     if (cuisineChart) cuisineChart.destroy();
     if (allergenChart) allergenChart.destroy();
     if (dietChart) dietChart.destroy();
@@ -121,9 +140,13 @@ function updateCharts(filteredRecipes) {
 }
 
 function createCuisineChart(recipes = recipeData) {
-    const ctx = document.getElementById('cuisineChart').getContext('2d');
-    const distribution = getCuisineDistribution(recipes);
+    const ctx = document.getElementById('cuisineChart');
+    if (!ctx) {
+        console.error("Cuisine chart canvas not found!");
+        return;
+    }
     
+    const distribution = getCuisineDistribution(recipes);
     const colors = ['#FF6B6B', '#4ECDC4', '#FFD166', '#06D6A0', '#A78BFA', '#FF85A1', '#118AB2'];
     
     cuisineChart = new Chart(ctx, {
@@ -134,30 +157,44 @@ function createCuisineChart(recipes = recipeData) {
                 data: Object.values(distribution),
                 backgroundColor: colors,
                 borderColor: '#fff',
-                borderWidth: 2
+                borderWidth: 2,
+                hoverOffset: 10
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'bottom',
                     labels: {
-                        color: '#fff',
+                        color: '#2D3748',
                         font: {
-                            size: 12
+                            size: 12,
+                            family: "'Poppins', sans-serif"
                         }
                     }
+                },
+                title: {
+                    display: false
                 }
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
             }
         }
     });
 }
 
 function createAllergenChart(recipes = recipeData) {
-    const ctx = document.getElementById('allergenChart').getContext('2d');
-    const distribution = getAllergenDistribution(recipes);
+    const ctx = document.getElementById('allergenChart');
+    if (!ctx) {
+        console.error("Allergen chart canvas not found!");
+        return;
+    }
     
+    const distribution = getAllergenDistribution(recipes);
     const colors = ['#FF6B6B', '#4ECDC4', '#FFD166', '#06D6A0', '#A78BFA', '#FF85A1'];
     
     allergenChart = new Chart(ctx, {
@@ -165,15 +202,17 @@ function createAllergenChart(recipes = recipeData) {
         data: {
             labels: Object.keys(distribution),
             datasets: [{
-                label: 'Recipes',
+                label: 'Number of Recipes',
                 data: Object.values(distribution),
                 backgroundColor: colors,
-                borderColor: colors.map(color => color.replace('0.8', '1')),
-                borderWidth: 1
+                borderColor: colors.map(color => color),
+                borderWidth: 1,
+                borderRadius: 5
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     display: false
@@ -183,48 +222,74 @@ function createAllergenChart(recipes = recipeData) {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        color: '#fff'
+                        color: '#2D3748',
+                        font: {
+                            family: "'Poppins', sans-serif"
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
                     }
                 },
                 x: {
                     ticks: {
-                        color: '#fff'
+                        color: '#2D3748',
+                        font: {
+                            family: "'Poppins', sans-serif"
+                        }
+                    },
+                    grid: {
+                        display: false
                     }
                 }
+            },
+            animation: {
+                duration: 1000
             }
         }
     });
 }
 
 function createDietChart(recipes = recipeData) {
-    const ctx = document.getElementById('dietChart').getContext('2d');
-    const distribution = getDietDistribution(recipes);
+    const ctx = document.getElementById('dietChart');
+    if (!ctx) {
+        console.error("Diet chart canvas not found!");
+        return;
+    }
     
+    const distribution = getDietDistribution(recipes);
     const colors = ['#FF6B6B', '#4ECDC4', '#FFD166', '#06D6A0', '#A78BFA'];
     
     dietChart = new Chart(ctx, {
-        type: 'polarArea',
+        type: 'pie',
         data: {
             labels: Object.keys(distribution),
             datasets: [{
                 data: Object.values(distribution),
                 backgroundColor: colors,
                 borderColor: '#fff',
-                borderWidth: 2
+                borderWidth: 2,
+                hoverOffset: 10
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'bottom',
                     labels: {
-                        color: '#fff',
+                        color: '#2D3748',
                         font: {
-                            size: 12
+                            size: 12,
+                            family: "'Poppins', sans-serif"
                         }
                     }
                 }
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
             }
         }
     });
@@ -232,6 +297,14 @@ function createDietChart(recipes = recipeData) {
 
 // Display Functions
 function displayRecipes(recipes) {
+    const recipesContainer = document.getElementById('recipes-container');
+    const resultsCount = document.getElementById('results-count');
+    
+    if (!recipesContainer || !resultsCount) {
+        console.error("Results containers not found!");
+        return;
+    }
+    
     recipesContainer.innerHTML = '';
     
     if (recipes.length === 0) {
