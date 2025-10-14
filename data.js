@@ -102,12 +102,36 @@ function loadRecipeData() {
             name: "Fruit Smoothie",
             cuisine: "Beverage",
             ingredients: ["Banana", "Strawberries", "Almond milk", "Honey", "Ice"],
-            allergens: ["None"],
+            allergens: [],
             diet: ["Vegan", "Vegetarian"],
             prepTime: 5,
             cookTime: 0,
             instructions: "1. Combine all ingredients in blender\n2. Blend until smooth\n3. Serve immediately",
             image: "smoothie.jpg"
+        },
+        {
+            id: 9,
+            name: "Asian Chicken Stir Fry",
+            cuisine: "Asian",
+            ingredients: ["Chicken breast", "Broccoli", "Carrots", "Bell peppers", "Ginger", "Garlic", "Soy sauce", "Sesame oil"],
+            allergens: ["Soy"],
+            diet: ["Non-vegetarian"],
+            prepTime: 15,
+            cookTime: 10,
+            instructions: "1. Cut chicken into strips\n2. Stir-fry chicken until cooked\n3. Add vegetables and stir-fry until tender\n4. Add sauce and cook for 1 minute",
+            image: "chicken-stirfry.jpg"
+        },
+        {
+            id: 10,
+            name: "Dairy-Free Pasta",
+            cuisine: "Italian",
+            ingredients: ["Pasta", "Tomato sauce", "Olive oil", "Garlic", "Basil", "Oregano"],
+            allergens: ["Gluten"],
+            diet: ["Vegan", "Vegetarian"],
+            prepTime: 10,
+            cookTime: 15,
+            instructions: "1. Cook pasta according to package\n2. Sauté garlic in olive oil\n3. Add tomato sauce and herbs\n4. Combine with pasta and serve",
+            image: "pasta.jpg"
         }
     ];
 
@@ -117,42 +141,40 @@ function loadRecipeData() {
 
 function extractFilterOptions() {
     // Extract allergens
-    const allAllergens = [];
+    const allAllergens = new Set();
     recipeData.forEach(recipe => {
         if (recipe.allergens && recipe.allergens.length > 0) {
             recipe.allergens.forEach(allergen => {
-                if (allergen !== "None" && !allAllergens.includes(allergen)) {
-                    allAllergens.push(allergen);
+                if (allergen !== "None") {
+                    allAllergens.add(allergen);
                 }
             });
         }
     });
-    allergensList = allAllergens.sort();
+    allergensList = Array.from(allAllergens).sort();
 
     // Extract diet types
-    const allDiets = [];
+    const allDiets = new Set();
     recipeData.forEach(recipe => {
         if (recipe.diet && recipe.diet.length > 0) {
             recipe.diet.forEach(diet => {
-                if (!allDiets.includes(diet)) {
-                    allDiets.push(diet);
-                }
+                allDiets.add(diet);
             });
         }
     });
-    dietTypesList = allDiets.sort();
+    dietTypesList = Array.from(allDiets).sort();
 
     // Extract cuisine types
-    const allCuisines = [];
+    const allCuisines = new Set();
     recipeData.forEach(recipe => {
-        if (recipe.cuisine && !allCuisines.includes(recipe.cuisine)) {
-            allCuisines.push(recipe.cuisine);
+        if (recipe.cuisine) {
+            allCuisines.add(recipe.cuisine);
         }
     });
-    cuisineTypesList = allCuisines.sort();
+    cuisineTypesList = Array.from(allCuisines).sort();
 }
 
-// Data filtering functions
+// Data filtering functions - FIXED VERSION
 function filterRecipes(selectedAllergens, selectedDiets, selectedCuisines) {
     if (recipeData.length === 0) {
         console.error("No recipe data available");
