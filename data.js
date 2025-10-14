@@ -154,6 +154,7 @@ function loadRecipeData() {
     ];
 
     extractFilterOptions();
+    console.log("Recipe data loaded:", recipeData.length, "recipes");
 }
 
 function extractFilterOptions() {
@@ -181,6 +182,12 @@ function extractFilterOptions() {
         if (recipe.cuisine) allCuisines.add(recipe.cuisine);
     });
     cuisineTypesList = Array.from(allCuisines).sort();
+    
+    console.log("Filter options extracted:", {
+        allergens: allergensList,
+        diets: dietTypesList,
+        cuisines: cuisineTypesList
+    });
 }
 
 // Analytics Functions
@@ -189,6 +196,7 @@ function getCuisineDistribution(recipes = recipeData) {
     recipes.forEach(recipe => {
         distribution[recipe.cuisine] = (distribution[recipe.cuisine] || 0) + 1;
     });
+    console.log("Cuisine distribution:", distribution);
     return distribution;
 }
 
@@ -201,6 +209,7 @@ function getAllergenDistribution(recipes = recipeData) {
             }
         });
     });
+    console.log("Allergen distribution:", distribution);
     return distribution;
 }
 
@@ -211,18 +220,15 @@ function getDietDistribution(recipes = recipeData) {
             distribution[diet] = (distribution[diet] || 0) + 1;
         });
     });
+    console.log("Diet distribution:", distribution);
     return distribution;
-}
-
-function getAverageCalories(recipes = recipeData) {
-    if (recipes.length === 0) return 0;
-    const total = recipes.reduce((sum, recipe) => sum + recipe.calories, 0);
-    return Math.round(total / recipes.length);
 }
 
 // Filtering function
 function filterRecipes(selectedAllergens, selectedDiets, selectedCuisines) {
-    return recipeData.filter(recipe => {
+    console.log("Filtering recipes with:", { selectedAllergens, selectedDiets, selectedCuisines });
+    
+    const filtered = recipeData.filter(recipe => {
         // Check allergens
         if (selectedAllergens.length > 0) {
             const hasExcludedAllergen = recipe.allergens.some(allergen => 
@@ -246,6 +252,9 @@ function filterRecipes(selectedAllergens, selectedDiets, selectedCuisines) {
 
         return true;
     });
+    
+    console.log("Filtered recipes:", filtered.length);
+    return filtered;
 }
 
 // Data access functions
@@ -254,5 +263,9 @@ function getDietTypesList() { return dietTypesList; }
 function getCuisineTypesList() { return cuisineTypesList; }
 function getRecipeById(id) { return recipeData.find(recipe => recipe.id === id); }
 
-// Initialize
-document.addEventListener('DOMContentLoaded', loadRecipeData);
+// Initialize data when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadRecipeData);
+} else {
+    loadRecipeData();
+}
