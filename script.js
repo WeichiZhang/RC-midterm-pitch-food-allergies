@@ -1,19 +1,15 @@
-// AllerGenie UI and Recommendation Logic
-// This module handles user interface interactions and recipe recommendations
-
-// Global Variables
+// AllerGenie UI with EDA Charts
 let selectedAllergens = [];
 let selectedDiets = [];
 let selectedCuisines = [];
+let charts = {};
 
 // DOM Elements
-let allergenFiltersContainer;
-let dietFiltersContainer;
-let cuisineFiltersContainer;
-let findRecipesButton;
-let resetFiltersButton;
-let recipesContainer;
-let resultsCount;
+let allergenFiltersContainer, dietFiltersContainer, cuisineFiltersContainer;
+let findRecipesButton, resetFiltersButton, recipesContainer, resultsCount;
+
+// Chart instances
+let cuisineChart, allergenChart, dietChart;
 
 // Initialization
 document.addEventListener('DOMContentLoaded', function() {
@@ -34,153 +30,204 @@ function initializeApp() {
     findRecipesButton.addEventListener('click', handleFindRecipes);
     resetFiltersButton.addEventListener('click', handleResetFilters);
     
-    // Initialize UI - wait a moment for data to load
-    setTimeout(populateFilterOptions, 100);
+    // Initialize UI
+    setTimeout(() => {
+        populateFilterOptions();
+        initializeCharts(); // Initialize charts with full dataset
+    }, 100);
 }
 
 function populateFilterOptions() {
-    // Populate allergen filters
-    const allergens = getAllergensList();
-    allergenFiltersContainer.innerHTML = '';
-    
-    allergens.forEach(allergen => {
+    populateFilterSection(allergenFiltersContainer, getAllergensList(), 'allergen');
+    populateFilterSection(dietFiltersContainer, getDietTypesList(), 'diet');
+    populateFilterSection(cuisineFiltersContainer, getCuisineTypesList(), 'cuisine');
+}
+
+function populateFilterSection(container, items, type) {
+    container.innerHTML = '';
+    items.forEach(item => {
         const checkboxItem = document.createElement('div');
         checkboxItem.className = 'checkbox-item';
         
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
-        checkbox.id = `allergen-${allergen.replace(/\s+/g, '-').toLowerCase()}`;
-        checkbox.value = allergen;
-        checkbox.addEventListener('change', handleAllergenSelection);
+        checkbox.id = `${type}-${item.replace(/\s+/g, '-').toLowerCase()}`;
+        checkbox.value = item;
+        checkbox.addEventListener('change', (e) => handleFilterSelection(e, type));
         
         const label = document.createElement('label');
         label.htmlFor = checkbox.id;
-        label.textContent = allergen;
+        label.textContent = item;
         
         checkboxItem.appendChild(checkbox);
         checkboxItem.appendChild(label);
-        allergenFiltersContainer.appendChild(checkboxItem);
-    });
-    
-    // Populate diet filters
-    const diets = getDietTypesList();
-    dietFiltersContainer.innerHTML = '';
-    
-    diets.forEach(diet => {
-        const checkboxItem = document.createElement('div');
-        checkboxItem.className = 'checkbox-item';
-        
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.id = `diet-${diet.replace(/\s+/g, '-').toLowerCase()}`;
-        checkbox.value = diet;
-        checkbox.addEventListener('change', handleDietSelection);
-        
-        const label = document.createElement('label');
-        label.htmlFor = checkbox.id;
-        label.textContent = diet;
-        
-        checkboxItem.appendChild(checkbox);
-        checkboxItem.appendChild(label);
-        dietFiltersContainer.appendChild(checkboxItem);
-    });
-    
-    // Populate cuisine filters
-    const cuisines = getCuisineTypesList();
-    cuisineFiltersContainer.innerHTML = '';
-    
-    cuisines.forEach(cuisine => {
-        const checkboxItem = document.createElement('div');
-        checkboxItem.className = 'checkbox-item';
-        
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.id = `cuisine-${cuisine.replace(/\s+/g, '-').toLowerCase()}`;
-        checkbox.value = cuisine;
-        checkbox.addEventListener('change', handleCuisineSelection);
-        
-        const label = document.createElement('label');
-        label.htmlFor = checkbox.id;
-        label.textContent = cuisine;
-        
-        checkboxItem.appendChild(checkbox);
-        checkboxItem.appendChild(label);
-        cuisineFiltersContainer.appendChild(checkboxItem);
+        container.appendChild(checkboxItem);
     });
 }
 
-// Event Handlers
-function handleAllergenSelection(event) {
-    const allergen = event.target.value;
+function handleFilterSelection(event, type) {
+    const value = event.target.value;
+    let array;
     
-    if (event.target.checked) {
-        if (!selectedAllergens.includes(allergen)) {
-            selectedAllergens.push(allergen);
-        }
-    } else {
-        selectedAllergens = selectedAllergens.filter(a => a !== allergen);
+    switch(type) {
+        case 'allergen': array = selectedAllergens; break;
+        case 'diet': array = selectedDiets; break;
+        case 'cuisine': array = selectedCuisines; break;
     }
     
-    console.log('Selected allergens:', selectedAllergens);
-}
-
-function handleDietSelection(event) {
-    const diet = event.target.value;
-    
     if (event.target.checked) {
-        if (!selectedDiets.includes(diet)) {
-            selectedDiets.push(diet);
-        }
+        if (!array.includes(value)) array.push(value);
     } else {
-        selectedDiets = selectedDiets.filter(d => d !== diet);
+        const index = array.indexOf(value);
+        if (index > -1) array.splice(index, 1);
     }
-    
-    console.log('Selected diets:', selectedDiets);
-}
-
-function handleCuisineSelection(event) {
-    const cuisine = event.target.value;
-    
-    if (event.target.checked) {
-        if (!selectedCuisines.includes(cuisine)) {
-            selectedCuisines.push(cuisine);
-        }
-    } else {
-        selectedCuisines = selectedCuisines.filter(c => c !== cuisine);
-    }
-    
-    console.log('Selected cuisines:', selectedCuisines);
 }
 
 function handleFindRecipes() {
-    console.log('Finding recipes with filters:');
-    console.log('Allergens:', selectedAllergens);
-    console.log('Diets:', selectedDiets);
-    console.log('Cuisines:', selectedCuisines);
-    
     const filteredRecipes = filterRecipes(selectedAllergens, selectedDiets, selectedCuisines);
-    console.log('Filtered recipes:', filteredRecipes);
-    
     displayRecipes(filteredRecipes);
+    updateCharts(filteredRecipes);
 }
 
 function handleResetFilters() {
-    // Clear selected arrays
     selectedAllergens = [];
     selectedDiets = [];
     selectedCuisines = [];
     
-    // Uncheck all checkboxes
-    const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
-    allCheckboxes.forEach(checkbox => {
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = false;
     });
     
-    // Reset display
     recipesContainer.innerHTML = '';
-    resultsCount.textContent = 'Select your preferences and click "Find Recipes"';
+    resultsCount.textContent = 'Select your preferences and let the magic begin! ✨';
+    initializeCharts(); // Reset charts to show full dataset
+}
+
+// Chart Functions
+function initializeCharts() {
+    createCuisineChart();
+    createAllergenChart();
+    createDietChart();
+}
+
+function updateCharts(filteredRecipes) {
+    if (cuisineChart) cuisineChart.destroy();
+    if (allergenChart) allergenChart.destroy();
+    if (dietChart) dietChart.destroy();
     
-    console.log('Filters reset');
+    createCuisineChart(filteredRecipes);
+    createAllergenChart(filteredRecipes);
+    createDietChart(filteredRecipes);
+}
+
+function createCuisineChart(recipes = recipeData) {
+    const ctx = document.getElementById('cuisineChart').getContext('2d');
+    const distribution = getCuisineDistribution(recipes);
+    
+    const colors = ['#FF6B6B', '#4ECDC4', '#FFD166', '#06D6A0', '#A78BFA', '#FF85A1', '#118AB2'];
+    
+    cuisineChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(distribution),
+            datasets: [{
+                data: Object.values(distribution),
+                backgroundColor: colors,
+                borderColor: '#fff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#fff',
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createAllergenChart(recipes = recipeData) {
+    const ctx = document.getElementById('allergenChart').getContext('2d');
+    const distribution = getAllergenDistribution(recipes);
+    
+    const colors = ['#FF6B6B', '#4ECDC4', '#FFD166', '#06D6A0', '#A78BFA', '#FF85A1'];
+    
+    allergenChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(distribution),
+            datasets: [{
+                label: 'Recipes',
+                data: Object.values(distribution),
+                backgroundColor: colors,
+                borderColor: colors.map(color => color.replace('0.8', '1')),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#fff'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#fff'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createDietChart(recipes = recipeData) {
+    const ctx = document.getElementById('dietChart').getContext('2d');
+    const distribution = getDietDistribution(recipes);
+    
+    const colors = ['#FF6B6B', '#4ECDC4', '#FFD166', '#06D6A0', '#A78BFA'];
+    
+    dietChart = new Chart(ctx, {
+        type: 'polarArea',
+        data: {
+            labels: Object.keys(distribution),
+            datasets: [{
+                data: Object.values(distribution),
+                backgroundColor: colors,
+                borderColor: '#fff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#fff',
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            }
+        }
+    });
 }
 
 // Display Functions
@@ -191,12 +238,15 @@ function displayRecipes(recipes) {
         resultsCount.textContent = 'No recipes found matching your criteria. Try adjusting your filters.';
         const noResults = document.createElement('div');
         noResults.className = 'no-results';
-        noResults.textContent = 'No matching recipes found. Please try different filter options.';
+        noResults.innerHTML = `
+            <h3>No recipes found! 🍳</h3>
+            <p>Try adjusting your filters to discover more delicious options!</p>
+        `;
         recipesContainer.appendChild(noResults);
         return;
     }
     
-    resultsCount.textContent = `Found ${recipes.length} recipe${recipes.length !== 1 ? 's' : ''} matching your criteria`;
+    resultsCount.textContent = `Found ${recipes.length} delicious recipe${recipes.length !== 1 ? 's' : ''} for you! 🎉`;
     
     recipes.forEach(recipe => {
         const recipeCard = createRecipeCard(recipe);
@@ -208,88 +258,40 @@ function createRecipeCard(recipe) {
     const card = document.createElement('div');
     card.className = 'recipe-card';
     
-    // Recipe image (placeholder in this implementation)
-    const imageDiv = document.createElement('div');
-    imageDiv.className = 'recipe-image';
-    imageDiv.style.backgroundColor = getRandomColor();
-    
-    // Add a simple text placeholder for the image
-    const imageText = document.createElement('div');
-    imageText.style.display = 'flex';
-    imageText.style.alignItems = 'center';
-    imageText.style.justifyContent = 'center';
-    imageText.style.height = '100%';
-    imageText.style.color = 'white';
-    imageText.style.fontWeight = 'bold';
-    imageText.textContent = recipe.name;
-    imageDiv.appendChild(imageText);
-    
-    card.appendChild(imageDiv);
-    
-    // Recipe content
-    const contentDiv = document.createElement('div');
-    contentDiv.className = 'recipe-content';
-    
-    // Recipe title
-    const title = document.createElement('h3');
-    title.className = 'recipe-title';
-    title.textContent = recipe.name;
-    contentDiv.appendChild(title);
-    
-    // Recipe cuisine
-    const cuisine = document.createElement('div');
-    cuisine.className = 'recipe-cuisine';
-    cuisine.textContent = recipe.cuisine;
-    contentDiv.appendChild(cuisine);
-    
-    // Recipe ingredients
-    const ingredientsDiv = document.createElement('div');
-    ingredientsDiv.className = 'recipe-ingredients';
-    
-    const ingredientsTitle = document.createElement('h4');
-    ingredientsTitle.textContent = 'Ingredients:';
-    ingredientsDiv.appendChild(ingredientsTitle);
-    
-    const ingredientsList = document.createElement('ul');
-    recipe.ingredients.forEach(ingredient => {
-        const li = document.createElement('li');
-        li.textContent = ingredient;
-        ingredientsList.appendChild(li);
-    });
-    ingredientsDiv.appendChild(ingredientsList);
-    contentDiv.appendChild(ingredientsDiv);
-    
-    // Recipe allergens (if any)
-    if (recipe.allergens && recipe.allergens.length > 0) {
-        const allergensDiv = document.createElement('div');
-        allergensDiv.className = 'recipe-allergens';
-        
-        const allergensTitle = document.createElement('h4');
-        allergensTitle.textContent = 'Contains:';
-        allergensTitle.style.marginBottom = '0.5rem';
-        allergensTitle.style.fontSize = '0.9rem';
-        allergensTitle.style.color = '#666';
-        allergensDiv.appendChild(allergensTitle);
-        
-        recipe.allergens.forEach(allergen => {
-            const tag = document.createElement('span');
-            tag.className = 'allergen-tag';
-            tag.textContent = allergen;
-            allergensDiv.appendChild(tag);
-        });
-        
-        contentDiv.appendChild(allergensDiv);
-    }
-    
-    card.appendChild(contentDiv);
-    return card;
-}
-
-// Utility Functions
-function getRandomColor() {
-    const colors = [
-        '#FFADAD', '#FFD6A5', '#FDFFB6', '#CAFFBF', 
-        '#9BF6FF', '#A0C4FF', '#BDB2FF', '#FFC6FF'
+    const gradientColors = [
+        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
     ];
-    return colors[Math.floor(Math.random() * colors.length)];
+    
+    const randomGradient = gradientColors[Math.floor(Math.random() * gradientColors.length)];
+    
+    card.innerHTML = `
+        <div class="recipe-image" style="background: ${randomGradient};">
+            <div class="recipe-badge">${recipe.cuisine}</div>
+        </div>
+        <div class="recipe-content">
+            <h3 class="recipe-title">${recipe.name}</h3>
+            <div class="recipe-meta">
+                <div class="meta-item">⏱️ ${recipe.prepTime + recipe.cookTime}min</div>
+                <div class="meta-item">🔥 ${recipe.calories} cal</div>
+                <div class="meta-item">⭐ ${recipe.rating}</div>
+            </div>
+            <div class="recipe-ingredients">
+                <div class="ingredients-title">📋 Ingredients</div>
+                <div class="ingredients-list">
+                    ${recipe.ingredients.map(ing => `<div>• ${ing}</div>`).join('')}
+                </div>
+            </div>
+            ${recipe.allergens.length > 0 ? `
+                <div class="recipe-allergens">
+                    ${recipe.allergens.map(allergen => `<span class="allergen-tag">${allergen}</span>`).join('')}
+                </div>
+            ` : ''}
+        </div>
+    `;
+    
+    return card;
 }
