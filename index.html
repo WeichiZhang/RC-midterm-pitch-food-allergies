@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AllerGenie - Recipe Recommender for Dietary Restrictions</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>AllerGenie</h1>
+            <p>Find recipes that match your dietary needs and restrictions</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="filters-section" class="card">
+            <h2>Your Dietary Profile</h2>
+            
+            <div class="filter-group">
+                <h3>Allergens to Avoid</h3>
+                <div class="checkbox-grid" id="allergen-filters">
+                    <!-- Allergen checkboxes will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <h3>Dietary Preferences</h3>
+                <div class="checkbox-grid" id="diet-filters">
+                    <!-- Diet checkboxes will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <h3>Cuisine Preferences</h3>
+                <div class="checkbox-grid" id="cuisine-filters">
+                    <!-- Cuisine checkboxes will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <button id="find-recipes" class="primary-btn">Find Recipes</button>
+            <button id="reset-filters" class="secondary-btn">Reset Filters</button>
+        </section>
+
+        <section id="results-section" class="card">
+            <h2>Recommended Recipes</h2>
+            <div id="results-count" class="results-count">Select your preferences and click "Find Recipes"</div>
+            <div id="recipes-container" class="recipes-grid">
+                <!-- Recipe cards will be populated by JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>AllerGenie &copy; 2023 - Helping you eat safely and deliciously</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Files -->
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
