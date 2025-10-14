@@ -3,60 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AllerGenie - Recipe Recommender for Dietary Restrictions</title>
+    <title>AllerGenie 🍳 - Smart Recipe Finder</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>AllerGenie</h1>
-            <p>Find recipes that match your dietary needs and restrictions</p>
-        </div>
-    </header>
+    <!-- Animated Background Elements -->
+    <div class="floating-stickers">
+        <div class="sticker avocado">🥑</div>
+        <div class="sticker carrot">🥕</div>
+        <div class="sticker tomato">🍅</div>
+        <div class="sticker broccoli">🥦</div>
+        <div class="sticker lemon">🍋</div>
+        <div class="sticker pepper">🫑</div>
+    </div>
 
-    <main class="container">
-        <section id="filters-section" class="card">
-            <h2>Your Dietary Profile</h2>
-            
-            <div class="filter-group">
-                <h3>Allergens to Avoid</h3>
-                <div class="checkbox-grid" id="allergen-filters">
-                    <!-- Allergen checkboxes will be populated by JavaScript -->
+    <div class="container">
+        <!-- Header with Fun Design -->
+        <header class="main-header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🧪</span>
+                    <h1>AllerGenie</h1>
                 </div>
+                <p class="tagline">Find delicious recipes that love you back! 🍴✨</p>
             </div>
-            
-            <div class="filter-group">
-                <h3>Dietary Preferences</h3>
-                <div class="checkbox-grid" id="diet-filters">
-                    <!-- Diet checkboxes will be populated by JavaScript -->
-                </div>
+            <div class="header-decoration">
+                <div class="decoration-food">🍕</div>
+                <div class="decoration-food">🍣</div>
+                <div class="decoration-food">🥗</div>
             </div>
-            
-            <div class="filter-group">
-                <h3>Cuisine Preferences</h3>
-                <div class="checkbox-grid" id="cuisine-filters">
-                    <!-- Cuisine checkboxes will be populated by JavaScript -->
-                </div>
-            </div>
-            
-            <button id="find-recipes" class="primary-btn">Find Recipes</button>
-            <button id="reset-filters" class="secondary-btn">Reset Filters</button>
-        </section>
+        </header>
 
-        <section id="results-section" class="card">
-            <h2>Recommended Recipes</h2>
-            <div id="results-count" class="results-count">Select your preferences and click "Find Recipes"</div>
-            <div id="recipes-container" class="recipes-grid">
-                <!-- Recipe cards will be populated by JavaScript -->
-            </div>
-        </section>
-    </main>
+        <main class="main-content">
+            <!-- Filters Section with Fun Design -->
+            <section class="filters-section card rainbow-card">
+                <div class="section-header">
+                    <h2>🎯 Create Your Food Profile</h2>
+                    <p>Tell us what works for your body!</p>
+                </div>
+                
+                <div class="filters-grid">
+                    <!-- Allergens Card -->
+                    <div class="filter-card allergen-card">
+                        <div class="filter-header">
+                            <span class="filter-icon">⚠️</span>
+                            <h3>Allergies & Sensitivities</h3>
+                        </div>
+                        <div class="checkbox-grid" id="allergen-filters">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
 
-    <footer>
-        <div class="container">
-            <p>AllerGenie &copy; 2023 - Helping you eat safely and deliciously</p>
-        </div>
-    </footer>
+                    <!-- Diet Card -->
+                    <div class="filter-card diet-card">
+                        <div class="filter-header">
+                            <span class="filter-icon">🥗</span>
+                            <h3>Dietary Lifestyle</h3>
+                        </div>
+                        <div class="checkbox-grid" id="diet-filters">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Cuisine Card -->
+                    <div class="filter-card cuisine-card">
+                        <div class="filter-header">
+                            <span class="filter-icon">🌍</span>
+                            <h3>Cuisine Preferences</h3>
+                        </div>
+                        <div class="checkbox-grid" id="cuisine-filters">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="find-recipes" class="primary-btn magic-btn">
+                        <span class="btn-icon">🔍</span>
+                        Find My Perfect Recipes!
+                    </button>
+                    <button id="reset-filters" class="secondary-btn">
+                        <span class="btn-icon">🔄</span>
+                        Start Over
+                    </button>
+                </div>
+            </section>
+
+            <!-- Results & Analytics Section -->
+            <section class="results-section">
+                <!-- EDA Charts Section -->
+                <div class="analytics-section card gradient-card">
+                    <div class="section-header">
+                        <h2>📊 Recipe Analytics</h2>
+                        <p>Discover insights about your food choices!</p>
+                    </div>
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <canvas id="cuisineChart"></canvas>
+                            <div class="chart-label">Cuisine Distribution</div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="allergenChart"></canvas>
+                            <div class="chart-label">Common Allergens</div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="dietChart"></canvas>
+                            <div class="chart-label">Diet Types</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recipes Results -->
+                <div class="recipes-results card">
+                    <div class="results-header">
+                        <h2>🍽️ Your Personalized Recipes</h2>
+                        <div id="results-count" class="results-count">
+                            Select your preferences and let the magic begin! ✨
+                        </div>
+                    </div>
+                    <div id="recipes-container" class="recipes-grid">
+                        <!-- Recipe cards will be populated here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Fun Footer -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="footer-message">
+                    <span class="footer-icon">❤️</span>
+                    Made with love for happy tummies!
+                </div>
+                <p>AllerGenie &copy; 2024 - Your kitchen's best friend</p>
+            </div>
+        </footer>
+    </div>
 
     <!-- JavaScript Files -->
     <script src="data.js"></script>
