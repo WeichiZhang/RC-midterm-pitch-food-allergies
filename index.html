@@ -94,23 +94,35 @@
             <!-- Results & Analytics Section -->
             <section class="results-section">
                 <!-- EDA Charts Section -->
-                <div class="analytics-section card gradient-card">
+                <div class="analytics-section card">
                     <div class="section-header">
                         <h2>📊 Recipe Analytics</h2>
                         <p>Discover insights about your food choices!</p>
                     </div>
-                    <div class="charts-grid">
-                        <div class="chart-container">
-                            <canvas id="cuisineChart"></canvas>
-                            <div class="chart-label">Cuisine Distribution</div>
+                    <div class="charts-container">
+                        <div class="chart-wrapper">
+                            <div class="chart-card">
+                                <h3>🍽️ Cuisine Distribution</h3>
+                                <div class="chart-container">
+                                    <canvas id="cuisineChart" width="400" height="300"></canvas>
+                                </div>
+                            </div>
                         </div>
-                        <div class="chart-container">
-                            <canvas id="allergenChart"></canvas>
-                            <div class="chart-label">Common Allergens</div>
+                        <div class="chart-wrapper">
+                            <div class="chart-card">
+                                <h3>⚠️ Common Allergens</h3>
+                                <div class="chart-container">
+                                    <canvas id="allergenChart" width="400" height="300"></canvas>
+                                </div>
+                            </div>
                         </div>
-                        <div class="chart-container">
-                            <canvas id="dietChart"></canvas>
-                            <div class="chart-label">Diet Types</div>
+                        <div class="chart-wrapper">
+                            <div class="chart-card">
+                                <h3>🥗 Diet Types</h3>
+                                <div class="chart-container">
+                                    <canvas id="dietChart" width="400" height="300"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
