@@ -34,8 +34,8 @@ function initializeApp() {
     findRecipesButton.addEventListener('click', handleFindRecipes);
     resetFiltersButton.addEventListener('click', handleResetFilters);
     
-    // Initialize UI
-    populateFilterOptions();
+    // Initialize UI - wait a moment for data to load
+    setTimeout(populateFilterOptions, 100);
 }
 
 function populateFilterOptions() {
@@ -120,6 +120,8 @@ function handleAllergenSelection(event) {
     } else {
         selectedAllergens = selectedAllergens.filter(a => a !== allergen);
     }
+    
+    console.log('Selected allergens:', selectedAllergens);
 }
 
 function handleDietSelection(event) {
@@ -132,6 +134,8 @@ function handleDietSelection(event) {
     } else {
         selectedDiets = selectedDiets.filter(d => d !== diet);
     }
+    
+    console.log('Selected diets:', selectedDiets);
 }
 
 function handleCuisineSelection(event) {
@@ -144,10 +148,19 @@ function handleCuisineSelection(event) {
     } else {
         selectedCuisines = selectedCuisines.filter(c => c !== cuisine);
     }
+    
+    console.log('Selected cuisines:', selectedCuisines);
 }
 
 function handleFindRecipes() {
+    console.log('Finding recipes with filters:');
+    console.log('Allergens:', selectedAllergens);
+    console.log('Diets:', selectedDiets);
+    console.log('Cuisines:', selectedCuisines);
+    
     const filteredRecipes = filterRecipes(selectedAllergens, selectedDiets, selectedCuisines);
+    console.log('Filtered recipes:', filteredRecipes);
+    
     displayRecipes(filteredRecipes);
 }
 
@@ -166,6 +179,8 @@ function handleResetFilters() {
     // Reset display
     recipesContainer.innerHTML = '';
     resultsCount.textContent = 'Select your preferences and click "Find Recipes"';
+    
+    console.log('Filters reset');
 }
 
 // Display Functions
@@ -197,6 +212,18 @@ function createRecipeCard(recipe) {
     const imageDiv = document.createElement('div');
     imageDiv.className = 'recipe-image';
     imageDiv.style.backgroundColor = getRandomColor();
+    
+    // Add a simple text placeholder for the image
+    const imageText = document.createElement('div');
+    imageText.style.display = 'flex';
+    imageText.style.alignItems = 'center';
+    imageText.style.justifyContent = 'center';
+    imageText.style.height = '100%';
+    imageText.style.color = 'white';
+    imageText.style.fontWeight = 'bold';
+    imageText.textContent = recipe.name;
+    imageDiv.appendChild(imageText);
+    
     card.appendChild(imageDiv);
     
     // Recipe content
@@ -233,9 +260,16 @@ function createRecipeCard(recipe) {
     contentDiv.appendChild(ingredientsDiv);
     
     // Recipe allergens (if any)
-    if (recipe.allergens && recipe.allergens.length > 0 && recipe.allergens[0] !== "None") {
+    if (recipe.allergens && recipe.allergens.length > 0) {
         const allergensDiv = document.createElement('div');
         allergensDiv.className = 'recipe-allergens';
+        
+        const allergensTitle = document.createElement('h4');
+        allergensTitle.textContent = 'Contains:';
+        allergensTitle.style.marginBottom = '0.5rem';
+        allergensTitle.style.fontSize = '0.9rem';
+        allergensTitle.style.color = '#666';
+        allergensDiv.appendChild(allergensTitle);
         
         recipe.allergens.forEach(allergen => {
             const tag = document.createElement('span');
